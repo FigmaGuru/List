@@ -2,6 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Semantic color tokens ─────────────────────────────────────────────────── */
+:root {
+  --color-background:         #f9fafb;
+  --color-surface:            #ffffff;
+  --color-muted:              #f3f4f6;
+  --color-muted-fg:           #9ca3af;
+  --color-border:             #e5e7eb;
+  --color-foreground:         #111827;   /* gray-900  */
+  --color-foreground-2:       #374151;   /* gray-700  */
+  --color-foreground-3:       #6b7280;   /* gray-500  */
+  --color-foreground-4:       #9ca3af;   /* gray-400  */
+  --color-foreground-5:       #d1d5db;   /* gray-300  */
+  --color-teal-subtle:        #e8f8f7;
+  --color-teal-subtle-hover:  #d0efed;
+}
+
+.dark {
+  --color-background:         #0d1117;
+  --color-surface:            #161b22;
+  --color-muted:              #21262d;
+  --color-muted-fg:           #8b949e;
+  --color-border:             #30363d;
+  --color-foreground:         #e6edf3;
+  --color-foreground-2:       #cdd9e5;
+  --color-foreground-3:       #8d96a0;
+  --color-foreground-4:       #656d76;
+  --color-foreground-5:       #3d444d;
+  --color-teal-subtle:        #1c3836;
+  --color-teal-subtle-hover:  #213f3c;
+}
+
+/* ── Theme-switch transition ────────────────────────────────────────────────
+   Only fires during the brief window we add this class from JS,
+   so hover / active animations are unaffected at all other times.          */
+.theme-transitioning,
+.theme-transitioning * {
+  transition:
+    background-color 0.25s ease,
+    color            0.2s  ease,
+    border-color     0.25s ease,
+    box-shadow       0.25s ease !important;
+}
+
+/* ── Base ───────────────────────────────────────────────────────────────────  */
 @layer base {
   * {
     @apply border-border;
@@ -12,10 +56,15 @@
     @apply bg-background;
     font-size: 16px;
     -webkit-text-size-adjust: 100%;
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
   }
 
   body {
-    @apply bg-background text-gray-900 font-sans;
+    @apply bg-background text-foreground font-sans;
     overscroll-behavior: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -30,6 +79,7 @@
   }
 }
 
+/* ── Utilities ──────────────────────────────────────────────────────────────  */
 @layer utilities {
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -46,5 +96,9 @@
   }
   .touch-action-pan-y {
     touch-action: pan-y;
+  }
+  /* Smooth scroll on all scrollable containers */
+  .smooth-scroll {
+    scroll-behavior: smooth;
   }
 }

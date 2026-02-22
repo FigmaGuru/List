@@ -16,11 +16,12 @@ export function MealCard({ meal, onAdd, onDelete, compact = false, className }: 
   if (compact) {
     return (
       <div className={cn(
-        'flex items-center gap-3 rounded-2xl bg-white p-3 shadow-soft border border-border/60',
+        'flex items-center gap-3 rounded-2xl bg-surface p-3 shadow-soft border border-border/60',
+        'transition-all duration-150 hover:shadow-card',
         className,
       )}>
         {/* Photo / Emoji */}
-        <div className="h-12 w-12 shrink-0 rounded-xl overflow-hidden bg-gray-50 flex items-center justify-center text-2xl">
+        <div className="h-12 w-12 shrink-0 rounded-xl overflow-hidden bg-muted flex items-center justify-center text-2xl">
           {meal.photo
             ? <img src={meal.photo} alt={meal.name} className="h-full w-full object-cover" />
             : meal.emoji
@@ -28,7 +29,7 @@ export function MealCard({ meal, onAdd, onDelete, compact = false, className }: 
         </div>
 
         <div className="flex-1 min-w-0">
-          <p className="font-semibold text-gray-900 truncate text-sm">{meal.name}</p>
+          <p className="font-semibold text-foreground truncate text-sm">{meal.name}</p>
           <Badge variant={meal.category} className="mt-0.5">
             {meal.category === 'pasta' ? '🍝 Pasta' : meal.category === 'rice' ? '🍚 Rice' : meal.category}
           </Badge>
@@ -37,7 +38,7 @@ export function MealCard({ meal, onAdd, onDelete, compact = false, className }: 
         {onDelete && (
           <button
             onClick={onDelete}
-            className="shrink-0 text-red-400 hover:text-red-600 p-1 rounded-lg transition"
+            className="shrink-0 text-red-400 hover:text-red-500 p-1 rounded-lg transition-colors duration-150 active:scale-90"
           >
             <Trash2 className="h-4 w-4" />
           </button>
@@ -48,11 +49,12 @@ export function MealCard({ meal, onAdd, onDelete, compact = false, className }: 
 
   return (
     <div className={cn(
-      'rounded-3xl bg-white shadow-card border border-border/40 overflow-hidden animate-fade-in',
+      'rounded-3xl bg-surface shadow-card border border-border/40 overflow-hidden animate-fade-in',
+      'transition-all duration-200 hover:shadow-card-hover hover:-translate-y-0.5',
       className,
     )}>
       {/* Photo area */}
-      <div className="h-36 bg-gradient-to-br from-[#e8f8f7] to-[#ccf0ee] flex items-center justify-center text-6xl relative">
+      <div className="h-36 bg-teal-subtle flex items-center justify-center text-6xl relative">
         {meal.photo
           ? <img src={meal.photo} alt={meal.name} className="h-full w-full object-cover absolute inset-0" />
           : <span className="select-none">{meal.emoji}</span>
@@ -66,14 +68,14 @@ export function MealCard({ meal, onAdd, onDelete, compact = false, className }: 
 
       {/* Body */}
       <div className="p-4">
-        <h3 className="font-bold text-gray-900 text-base leading-tight">{meal.name}</h3>
-        <p className="mt-1 text-sm text-gray-500 line-clamp-2">{meal.description}</p>
+        <h3 className="font-bold text-foreground text-base leading-tight">{meal.name}</h3>
+        <p className="mt-1 text-sm text-foreground-3 line-clamp-2">{meal.description}</p>
 
         {/* Tags */}
         {meal.tags.length > 0 && (
           <div className="mt-2.5 flex flex-wrap gap-1">
             {meal.tags.slice(0, 3).map((tag) => (
-              <span key={tag} className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
+              <span key={tag} className="rounded-full bg-muted px-2 py-0.5 text-xs text-foreground-3">
                 {tag}
               </span>
             ))}

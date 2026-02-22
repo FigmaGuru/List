@@ -86,7 +86,7 @@ export function AddMealDialog({ open, onOpenChange, addToDate }: AddMealDialogPr
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              className="h-20 w-20 shrink-0 rounded-2xl border-2 border-dashed border-[#0f766e] bg-[#f0fbfa] flex flex-col items-center justify-center gap-1 text-[#0f766e] transition hover:bg-[#e8f8f7]"
+              className="h-20 w-20 shrink-0 rounded-2xl border-2 border-dashed border-[#0f766e] bg-teal-subtle flex flex-col items-center justify-center gap-1 text-[#0f766e] transition-colors duration-150 hover:bg-teal-subtle-hover active:scale-95"
             >
               {photo
                 ? <img src={photo} alt="preview" className="h-full w-full rounded-2xl object-cover" />
@@ -122,10 +122,10 @@ export function AddMealDialog({ open, onOpenChange, addToDate }: AddMealDialogPr
                   key={c.value}
                   type="button"
                   onClick={() => setCategory(c.value)}
-                  className={`flex-1 flex flex-col items-center gap-1 rounded-2xl border-2 py-2.5 text-sm font-medium transition ${
+                  className={`flex-1 flex flex-col items-center gap-1 rounded-2xl border-2 py-2.5 text-sm font-medium transition-all duration-150 active:scale-95 ${
                     category === c.value
-                      ? 'border-[#0f766e] bg-[#e8f8f7] text-[#0f766e]'
-                      : 'border-border bg-surface text-gray-500'
+                      ? 'border-[#0f766e] bg-teal-subtle text-[#0f766e]'
+                      : 'border-border bg-surface text-foreground-3'
                   }`}
                 >
                   <span className="text-xl">{c.emoji}</span>
