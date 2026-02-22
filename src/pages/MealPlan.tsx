@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { ChevronLeft, ChevronRight, Plus, Trash2, UtensilsCrossed, CalendarCheck } from 'lucide-react'
+import { useState, useRef } from 'react'
+import { ChevronLeft, ChevronRight, Plus, UtensilsCrossed, CalendarCheck } from 'lucide-react'
 import { useStore } from '@/store/useStore'
 import { Button } from '@/components/ui/button'
 import { MealCard } from '@/components/MealCard'
@@ -96,6 +96,8 @@ export default function MealPlan() {
   const [libraryOpen, setLibraryOpen] = useState(false)
   const [addNewOpen, setAddNewOpen] = useState(false)
 
+  const scrollRef = useRef<HTMLDivElement>(null)
+
   const refDate = new Date(today)
   refDate.setDate(today.getDate() + weekOffset * 7)
   const weekDates = getWeekDates(refDate)
@@ -117,6 +119,11 @@ export default function MealPlan() {
   function goToToday() {
     setWeekOffset(0)
     setSelectedDate(formatDate(today))
+  }
+
+  function selectDay(iso: string) {
+    setSelectedDate(iso)
+    scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
@@ -201,9 +208,10 @@ export default function MealPlan() {
         </div>
       </div>
 
-      {/* Day content */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 pb-28 scrollbar-hide">
-        {/* Day label */}
+      {/* Scrollable content */}
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 pb-28 scrollbar-hide">
+
+        {/* ── Selected day detail ── */}
         <div className="flex items-center justify-between mb-4">
           <div>
             <p className="text-xs text-[#0f766e] font-semibold uppercase tracking-wider">
@@ -228,14 +236,13 @@ export default function MealPlan() {
           </div>
         </div>
 
-        {/* Meals for this day */}
         {dayMeals.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-14 text-center">
-            <div className="h-20 w-20 rounded-3xl bg-[#e8f8f7] flex items-center justify-center mb-4">
-              <UtensilsCrossed className="h-9 w-9 text-[#0f766e]" />
+          <div className="flex flex-col items-center justify-center py-10 text-center">
+            <div className="h-16 w-16 rounded-3xl bg-[#e8f8f7] flex items-center justify-center mb-3">
+              <UtensilsCrossed className="h-8 w-8 text-[#0f766e]" />
             </div>
             <p className="font-semibold text-gray-700">Nothing planned yet</p>
-            <p className="text-sm text-gray-400 mt-1 mb-5">Add meals from your library or create a new one</p>
+            <p className="text-sm text-gray-400 mt-1 mb-4">Add meals from your library or create a new one</p>
             <div className="flex gap-3">
               <Button size="sm" variant="outline" onClick={() => setAddNewOpen(true)}>
                 <Plus className="h-3.5 w-3.5" /> New Meal
@@ -255,7 +262,6 @@ export default function MealPlan() {
                 onDelete={() => removeMealFromDay(selectedDate, meal.id)}
               />
             ))}
-            {/* Quick-add row below meals */}
             <button
               onClick={() => setLibraryOpen(true)}
               className="w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border py-3 text-sm text-gray-400 hover:border-[#0f766e]/40 hover:text-[#0f766e] transition-colors"
@@ -265,6 +271,96 @@ export default function MealPlan() {
             </button>
           </div>
         )}
+
+        {/* ── Week overview ── */}
+        <div className="mt-8">
+          <div className="flex items-center gap-3 mb-3">
+            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 shrink-0">
+              This Week
+            </p>
+            <div className="flex-1 h-px bg-border" />
+          </div>
+
+          <div className="space-y-2">
+            {weekDates.map((date, i) => {
+              const iso = formatDate(date)
+              const rowMealIds = plan[iso]?.mealIds ?? []
+              const rowMeals = rowMealIds
+                .map((id) => meals.find((m) => m.id === id))
+                .filter(Boolean) as typeof meals
+              const isSelected = iso === selectedDate
+              const isTodayDate = isToday(date)
+
+              return (
+                <button
+                  key={iso}
+                  onClick={() => selectDay(iso)}
+                  className={cn(
+                    'w-full flex items-center gap-3 rounded-2xl px-4 py-3 text-left transition-all',
+                    isSelected
+                      ? 'bg-[#0f766e]/[0.07] border border-[#0f766e]/25 shadow-sm'
+                      : 'bg-white border border-border/60 hover:border-[#0f766e]/30 hover:bg-[#f0faf9]',
+                  )}
+                >
+                  {/* Day label */}
+                  <div className="shrink-0 w-10 text-center">
+                    <p className={cn(
+                      'text-[10px] font-semibold uppercase tracking-wide',
+                      isSelected || isTodayDate ? 'text-[#0f766e]' : 'text-gray-400',
+                    )}>
+                      {DAY_NAMES[i]}
+                    </p>
+                    <p className={cn(
+                      'text-lg font-bold leading-tight',
+                      isSelected ? 'text-[#0f766e]' : 'text-gray-900',
+                    )}>
+                      {date.getDate()}
+                    </p>
+                  </div>
+
+                  {/* Divider */}
+                  <div className={cn(
+                    'w-px self-stretch shrink-0 rounded-full',
+                    isSelected ? 'bg-[#0f766e]/30' : 'bg-border',
+                  )} />
+
+                  {/* Meals list */}
+                  <div className="flex-1 min-w-0">
+                    {rowMeals.length === 0 ? (
+                      <p className="text-xs text-gray-300 italic">Nothing planned</p>
+                    ) : (
+                      <div className="space-y-0.5">
+                        {rowMeals.map((meal) => (
+                          <div key={meal.id} className="flex items-center gap-1.5 min-w-0">
+                            <span className="text-sm shrink-0">
+                              {meal.photo
+                                ? <img src={meal.photo} alt="" className="h-4 w-4 rounded object-cover inline" />
+                                : meal.emoji}
+                            </span>
+                            <p className={cn(
+                              'text-xs font-medium truncate',
+                              isSelected ? 'text-gray-800' : 'text-gray-600',
+                            )}>
+                              {meal.name}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Today pill */}
+                  {isTodayDate && (
+                    <span className="shrink-0 text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-[#0f766e] text-white">
+                      Today
+                    </span>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
       </div>
 
       {/* Sheets */}
