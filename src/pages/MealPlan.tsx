@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { ChevronLeft, ChevronRight, Plus, UtensilsCrossed, CalendarCheck } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, UtensilsCrossed, CalendarCheck, BookOpen } from 'lucide-react'
 import { useStore } from '@/store/useStore'
 import { Button } from '@/components/ui/button'
 import { MealCard } from '@/components/MealCard'
@@ -128,16 +128,22 @@ export default function MealPlan() {
   return (
     <div className="flex flex-col h-full animate-fade-in">
       {/* Header */}
-      <header className="pt-safe bg-surface border-b border-border/60 px-4 pt-4 pb-3">
-        <div className="flex items-center justify-between">
+      <header className="pt-safe relative overflow-hidden bg-gradient-to-br from-[#0f766e]/10 via-surface to-surface border-b border-border/60 px-4 pt-5 pb-4">
+        {/* Decorative blob */}
+        <div className="absolute -top-6 -right-6 h-28 w-28 rounded-full bg-[#0f766e]/8 blur-2xl pointer-events-none" />
+        <div className="flex items-start justify-between relative">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Meal Plan</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">{weekRangeLabel}</p>
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-[#0f766e] mb-0.5">Weekly</p>
+            <h1 className="text-3xl font-extrabold text-foreground leading-none">Meal Plan</h1>
+            <div className="flex items-center gap-1.5 mt-2">
+              <CalendarCheck className="h-3.5 w-3.5 text-[#0f766e]" />
+              <p className="text-xs font-medium text-foreground-3">{weekRangeLabel}</p>
+            </div>
           </div>
           {weekOffset !== 0 && (
             <button
               onClick={goToToday}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-teal-subtle text-[#0f766e] text-xs font-semibold hover:bg-teal-subtle-hover active:scale-95 transition-all duration-150"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0f766e] text-white text-xs font-semibold shadow-fab active:scale-95 transition-all duration-150 mt-1"
             >
               <CalendarCheck className="h-3.5 w-3.5" />
               Today
@@ -224,14 +230,6 @@ export default function MealPlan() {
               </p>
             )}
           </div>
-          <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={() => setAddNewOpen(true)}>
-              <Plus className="h-3.5 w-3.5" /> New
-            </Button>
-            <Button size="sm" onClick={() => setLibraryOpen(true)}>
-              <Plus className="h-3.5 w-3.5" /> Library
-            </Button>
-          </div>
         </div>
 
         {dayMeals.length === 0 ? (
@@ -240,15 +238,7 @@ export default function MealPlan() {
               <UtensilsCrossed className="h-8 w-8 text-[#0f766e]" />
             </div>
             <p className="font-semibold text-foreground">Nothing planned yet</p>
-            <p className="text-sm text-muted-foreground mt-1 mb-4">Add meals from your library or create a new one</p>
-            <div className="flex gap-3">
-              <Button size="sm" variant="outline" onClick={() => setAddNewOpen(true)}>
-                <Plus className="h-3.5 w-3.5" /> New Meal
-              </Button>
-              <Button size="sm" onClick={() => setLibraryOpen(true)}>
-                <Plus className="h-3.5 w-3.5" /> From Library
-              </Button>
-            </div>
+            <p className="text-sm text-muted-foreground mt-1">Tap + to add meals from your library</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -359,6 +349,26 @@ export default function MealPlan() {
           </div>
         </div>
 
+      </div>
+
+      {/* FABs — fixed above bottom nav */}
+      <div className="fixed bottom-24 right-4 z-30 flex flex-col gap-3 items-end">
+        {/* Secondary FAB: create new meal */}
+        <button
+          onClick={() => setAddNewOpen(true)}
+          aria-label="Create new meal"
+          className="h-12 w-12 rounded-full bg-surface border border-border shadow-card flex items-center justify-center text-[#0f766e] active:scale-90 transition-all duration-150"
+        >
+          <Plus className="h-5 w-5" />
+        </button>
+        {/* Primary FAB: add from library */}
+        <button
+          onClick={() => setLibraryOpen(true)}
+          aria-label="Add from library"
+          className="h-14 w-14 rounded-full bg-[#0f766e] shadow-fab flex items-center justify-center text-white active:scale-90 transition-all duration-150"
+        >
+          <BookOpen className="h-6 w-6" />
+        </button>
       </div>
 
       {/* Sheets */}
