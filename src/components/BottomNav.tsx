@@ -1,7 +1,6 @@
 import { NavLink } from 'react-router-dom'
-import { CalendarDays, UtensilsCrossed, ShoppingCart, BookOpen, Sun, Moon } from 'lucide-react'
+import { CalendarDays, UtensilsCrossed, ShoppingCart, BookOpen } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { useStore } from '@/store/useStore'
 
 const tabs = [
   { to: '/',         label: 'Plan',     Icon: CalendarDays    },
@@ -11,9 +10,6 @@ const tabs = [
 ]
 
 export function BottomNav() {
-  const theme = useStore((s) => s.theme)
-  const toggleTheme = useStore((s) => s.toggleTheme)
-
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-surface/90 backdrop-blur border-t border-border">
       <div className="flex items-stretch pb-safe">
@@ -48,26 +44,6 @@ export function BottomNav() {
             )}
           </NavLink>
         ))}
-
-        {/* Theme toggle */}
-        <button
-          onClick={toggleTheme}
-          aria-label="Toggle theme"
-          className={cn(
-            'w-12 flex flex-col items-center justify-center gap-0.5 py-2.5',
-            'text-muted-foreground transition-colors duration-150',
-          )}
-        >
-          <span className="flex h-7 w-7 items-center justify-center rounded-xl hover:bg-muted transition-colors duration-150 active:scale-90">
-            {theme === 'dark'
-              ? <Sun  className="h-4 w-4" strokeWidth={1.8} />
-              : <Moon className="h-4 w-4" strokeWidth={1.8} />
-            }
-          </span>
-          <span className="text-[10px] font-medium">
-            {theme === 'dark' ? 'Light' : 'Dark'}
-          </span>
-        </button>
       </div>
     </nav>
   )

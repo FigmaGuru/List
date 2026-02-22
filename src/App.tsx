@@ -1,7 +1,6 @@
 import { HashRouter, Routes, Route } from 'react-router-dom'
 import { Suspense, lazy, useEffect } from 'react'
 import { BottomNav } from '@/components/BottomNav'
-import { useStore } from '@/store/useStore'
 
 const MealPlan     = lazy(() => import('@/pages/MealPlan'))
 const MealLibrary  = lazy(() => import('@/pages/MealLibrary'))
@@ -16,17 +15,21 @@ function PageLoader() {
   )
 }
 
-export default function App() {
-  const theme = useStore((s) => s.theme)
+function applyTheme(dark: boolean) {
+  const root = document.documentElement
+  root.classList.add('theme-transitioning')
+  root.classList.toggle('dark', dark)
+  setTimeout(() => root.classList.remove('theme-transitioning'), 350)
+}
 
+export default function App() {
   useEffect(() => {
-    const root = document.documentElement
-    // Add transition class briefly so the theme switch is smooth
-    root.classList.add('theme-transitioning')
-    root.classList.toggle('dark', theme === 'dark')
-    const timer = setTimeout(() => root.classList.remove('theme-transitioning'), 350)
-    return () => clearTimeout(timer)
-  }, [theme])
+    const mq = window.matchMedia('(prefers-color-scheme: dark)')
+    applyTheme(mq.matches)
+    const handler = (e: MediaQueryListEvent) => applyTheme(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
 
   return (
     <HashRouter>

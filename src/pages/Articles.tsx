@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Trash2, ExternalLink, BookOpen, Link as LinkIcon } from 'lucide-react'
+import { Plus, Trash2, ExternalLink, BookOpen, Link as LinkIcon, Bookmark } from 'lucide-react'
 import { useStore } from '@/store/useStore'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -87,15 +87,21 @@ export default function Articles() {
   return (
     <div className="flex flex-col h-full animate-fade-in">
       {/* Header */}
-      <header className="pt-safe bg-surface border-b border-border/60 px-4 pt-4 pb-3">
-        <div className="flex items-center justify-between">
+      <header className="pt-safe relative overflow-hidden bg-gradient-to-br from-[#0f766e]/10 via-surface to-surface border-b border-border/60 px-4 pt-5 pb-4">
+        {/* Decorative blob */}
+        <div className="absolute -top-6 -right-6 h-28 w-28 rounded-full bg-[#0f766e]/8 blur-2xl pointer-events-none" />
+
+        <div className="flex items-start justify-between relative">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Saved</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">{articles.length} saved links</p>
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-[#0f766e] mb-0.5">Recipes</p>
+            <h1 className="text-3xl font-extrabold text-foreground leading-none">Saved</h1>
+            <div className="flex items-center gap-1.5 mt-2">
+              <span className="inline-flex items-center gap-1 h-5 px-2 rounded-full bg-[#0f766e]/15 text-[#0f766e] text-[10px] font-bold">
+                <Bookmark className="h-3 w-3" />
+                {articles.length} link{articles.length !== 1 ? 's' : ''}
+              </span>
+            </div>
           </div>
-          <Button size="sm" onClick={() => setAddOpen(true)}>
-            <Plus className="h-4 w-4" /> Add Link
-          </Button>
         </div>
       </header>
 
@@ -169,6 +175,15 @@ export default function Articles() {
           })
         )}
       </div>
+
+      {/* FAB — fixed above bottom nav */}
+      <button
+        onClick={() => setAddOpen(true)}
+        aria-label="Save link"
+        className="fixed bottom-24 right-4 z-30 h-14 w-14 rounded-full bg-[#0f766e] shadow-fab flex items-center justify-center text-white active:scale-90 transition-all duration-150"
+      >
+        <Plus className="h-6 w-6" />
+      </button>
 
       <AddArticleDialog open={addOpen} onOpenChange={setAddOpen} />
     </div>

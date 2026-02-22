@@ -33,10 +33,6 @@ interface State {
   plan: Record<string, DayPlan>
   shoppingList: ShoppingItem[]
   articles: Article[]
-  theme: 'light' | 'dark'
-
-  // Theme actions
-  toggleTheme: () => void
 
   // Meal actions
   addMeal: (meal: Omit<Meal, 'id'>) => string
@@ -71,13 +67,6 @@ export const useStore = create<State>()(
       plan: {},
       shoppingList: [],
       articles: [],
-      theme: (typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches)
-        ? 'dark'
-        : 'light',
-
-      // ─── Theme actions ─────────────────────────────────────────────────────
-      toggleTheme: () =>
-        set((s) => ({ theme: s.theme === 'dark' ? 'light' : 'dark' })),
 
       // ─── Meal actions ──────────────────────────────────────────────────────
       addMeal: (meal) => {

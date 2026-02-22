@@ -3,7 +3,6 @@ import { Plus, Search, UtensilsCrossed } from 'lucide-react'
 import { useStore } from '@/store/useStore'
 import { MealCard } from '@/components/MealCard'
 import { AddMealDialog } from '@/components/AddMealDialog'
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { MealCategory } from '@/data/meals'
 
@@ -32,19 +31,25 @@ export default function MealLibrary() {
   return (
     <div className="flex flex-col h-full animate-fade-in">
       {/* Header */}
-      <header className="pt-safe bg-surface border-b border-border/60 px-4 pt-4 pb-3">
-        <div className="flex items-center justify-between">
+      <header className="pt-safe relative overflow-hidden bg-gradient-to-br from-[#0f766e]/10 via-surface to-surface border-b border-border/60 px-4 pt-5 pb-4">
+        {/* Decorative blob */}
+        <div className="absolute -top-6 -right-6 h-28 w-28 rounded-full bg-[#0f766e]/8 blur-2xl pointer-events-none" />
+
+        <div className="flex items-start justify-between relative">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Meals</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">{meals.length} meals in your library</p>
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-[#0f766e] mb-0.5">Library</p>
+            <h1 className="text-3xl font-extrabold text-foreground leading-none">Meals</h1>
+            <div className="flex items-center gap-1.5 mt-2">
+              <span className="inline-flex items-center justify-center h-5 px-2 rounded-full bg-[#0f766e]/15 text-[#0f766e] text-[10px] font-bold">
+                {meals.length}
+              </span>
+              <p className="text-xs font-medium text-foreground-3">in your library</p>
+            </div>
           </div>
-          <Button size="fab" onClick={() => setAddOpen(true)} className="h-12 w-12 rounded-full shadow-fab active:scale-95 transition-transform duration-150">
-            <Plus className="h-5 w-5" />
-          </Button>
         </div>
 
         {/* Search */}
-        <div className="relative mt-3">
+        <div className="relative mt-4">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             type="search"
@@ -96,6 +101,15 @@ export default function MealLibrary() {
           </div>
         )}
       </div>
+
+      {/* FAB — fixed above bottom nav */}
+      <button
+        onClick={() => setAddOpen(true)}
+        aria-label="Add meal"
+        className="fixed bottom-24 right-4 z-30 h-14 w-14 rounded-full bg-[#0f766e] shadow-fab flex items-center justify-center text-white active:scale-90 transition-all duration-150"
+      >
+        <Plus className="h-6 w-6" />
+      </button>
 
       <AddMealDialog open={addOpen} onOpenChange={setAddOpen} />
     </div>
