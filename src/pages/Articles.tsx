@@ -40,7 +40,7 @@ function AddArticleDialog({ open, onOpenChange }: { open: boolean; onOpenChange:
           <div>
             <Label htmlFor="art-url">URL *</Label>
             <div className="relative mt-1">
-              <LinkIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <LinkIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 id="art-url"
                 type="url"
@@ -85,13 +85,13 @@ export default function Articles() {
   const [addOpen, setAddOpen] = useState(false)
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full animate-fade-in">
       {/* Header */}
-      <header className="pt-safe bg-white border-b border-border/60 px-4 pt-4 pb-3">
+      <header className="pt-safe bg-surface border-b border-border/60 px-4 pt-4 pb-3">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Saved</h1>
-            <p className="text-sm text-gray-400 mt-0.5">{articles.length} saved links</p>
+            <h1 className="text-2xl font-bold text-foreground">Saved</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">{articles.length} saved links</p>
           </div>
           <Button size="sm" onClick={() => setAddOpen(true)}>
             <Plus className="h-4 w-4" /> Add Link
@@ -102,11 +102,11 @@ export default function Articles() {
       <div className="flex-1 overflow-y-auto pb-28 scrollbar-hide px-4 py-4 space-y-3">
         {articles.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="h-20 w-20 rounded-3xl bg-[#e8f8f7] flex items-center justify-center mb-4">
+            <div className="h-20 w-20 rounded-3xl bg-teal-subtle flex items-center justify-center mb-4 animate-float">
               <BookOpen className="h-9 w-9 text-[#0f766e]" />
             </div>
-            <p className="font-semibold text-gray-700">No saved links yet</p>
-            <p className="text-sm text-gray-400 mt-1">Save recipe ideas and articles here</p>
+            <p className="font-semibold text-foreground">No saved links yet</p>
+            <p className="text-sm text-muted-foreground mt-1">Save recipe ideas and articles here</p>
           </div>
         ) : (
           articles.map((article) => {
@@ -121,11 +121,11 @@ export default function Articles() {
             return (
               <div
                 key={article.id}
-                className="bg-white rounded-3xl border border-border/40 shadow-soft p-4 animate-fade-in"
+                className="bg-surface rounded-3xl border border-border/40 shadow-soft p-4 animate-fade-in transition-shadow duration-200 hover:shadow-card"
               >
                 <div className="flex items-start gap-3">
                   {/* Favicon */}
-                  <div className="h-10 w-10 shrink-0 rounded-xl bg-[#e8f8f7] flex items-center justify-center overflow-hidden">
+                  <div className="h-10 w-10 shrink-0 rounded-xl bg-teal-subtle flex items-center justify-center overflow-hidden">
                     <img
                       src={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`}
                       alt=""
@@ -135,12 +135,12 @@ export default function Articles() {
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-gray-900 text-sm leading-snug">{article.title}</p>
+                    <p className="font-semibold text-foreground text-sm leading-snug">{article.title}</p>
                     <p className="text-xs text-[#0f766e] mt-0.5 truncate">{domain}</p>
                     {article.notes && (
-                      <p className="text-sm text-gray-500 mt-1.5 leading-relaxed">{article.notes}</p>
+                      <p className="text-sm text-foreground-3 mt-1.5 leading-relaxed">{article.notes}</p>
                     )}
-                    <p className="text-xs text-gray-300 mt-2">
+                    <p className="text-xs text-foreground-5 mt-2">
                       {new Date(article.addedAt).toLocaleDateString('en-GB', {
                         day: 'numeric', month: 'short', year: 'numeric',
                       })}
@@ -152,13 +152,13 @@ export default function Articles() {
                       href={article.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-2 rounded-xl bg-[#e8f8f7] text-[#0f766e] hover:bg-[#ccede9] transition"
+                      className="p-2 rounded-xl bg-teal-subtle text-[#0f766e] hover:bg-teal-subtle-hover active:scale-90 transition-all duration-150"
                     >
                       <ExternalLink className="h-4 w-4" />
                     </a>
                     <button
                       onClick={() => deleteArticle(article.id)}
-                      className="p-2 rounded-xl text-gray-300 hover:text-red-400 hover:bg-red-50 transition"
+                      className="p-2 rounded-xl text-foreground-5 hover:text-red-400 hover:bg-red-500/10 active:scale-90 transition-all duration-150"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>

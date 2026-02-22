@@ -50,7 +50,7 @@ function AddItemDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v
             />
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-700 mb-2">Category</p>
+            <p className="text-sm font-medium text-foreground-2 mb-2">Category</p>
             <div className="flex flex-wrap gap-2">
               {CATEGORIES.map((c) => (
                 <button
@@ -58,10 +58,10 @@ function AddItemDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v
                   type="button"
                   onClick={() => setCategory(c)}
                   className={cn(
-                    'px-3 py-1.5 rounded-full text-sm font-medium transition',
+                    'px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-150 active:scale-95',
                     category === c
                       ? 'bg-[#0f766e] text-white'
-                      : 'bg-muted text-gray-500 hover:bg-gray-200',
+                      : 'bg-muted text-foreground-3 hover:bg-muted/80',
                   )}
                 >
                   {c}
@@ -94,17 +94,16 @@ export default function ShoppingList() {
     return acc
   }, {})
 
-  // Also show "Other" group for uncategorised
   const allGroupedCategories = Object.keys(grouped)
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full animate-fade-in">
       {/* Header */}
-      <header className="pt-safe bg-white border-b border-border/60 px-4 pt-4 pb-3">
+      <header className="pt-safe bg-surface border-b border-border/60 px-4 pt-4 pb-3">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Shopping</h1>
-            <p className="text-sm text-gray-400 mt-0.5">
+            <h1 className="text-2xl font-bold text-foreground">Shopping</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">
               {unchecked.length} item{unchecked.length !== 1 ? 's' : ''} remaining
             </p>
           </div>
@@ -124,18 +123,18 @@ export default function ShoppingList() {
       <div className="flex-1 overflow-y-auto pb-28 scrollbar-hide px-4 py-4">
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="h-20 w-20 rounded-3xl bg-[#e8f8f7] flex items-center justify-center mb-4">
+            <div className="h-20 w-20 rounded-3xl bg-teal-subtle flex items-center justify-center mb-4 animate-float">
               <ShoppingCart className="h-9 w-9 text-[#0f766e]" />
             </div>
-            <p className="font-semibold text-gray-700">List is empty</p>
-            <p className="text-sm text-gray-400 mt-1">Tap + to add your first item</p>
+            <p className="font-semibold text-foreground">List is empty</p>
+            <p className="text-sm text-muted-foreground mt-1">Tap + to add your first item</p>
           </div>
         ) : (
           <>
             {/* Unchecked — grouped */}
             {allGroupedCategories.map((cat) => (
               <section key={cat} className="mb-5">
-                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2 px-1">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 px-1">
                   {cat}
                 </p>
                 <div className="space-y-2">
@@ -154,7 +153,7 @@ export default function ShoppingList() {
             {/* Checked */}
             {checked.length > 0 && (
               <section className="mt-6">
-                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2 px-1">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 px-1">
                   Done ({checked.length})
                 </p>
                 <div className="space-y-2">
@@ -187,17 +186,17 @@ interface ShoppingItemRowProps {
 function ShoppingItemRow({ item, onToggle, onDelete }: ShoppingItemRowProps) {
   return (
     <div className={cn(
-      'flex items-center gap-3 rounded-2xl bg-white border px-4 py-3 shadow-soft transition-all',
+      'flex items-center gap-3 rounded-2xl bg-surface border px-4 py-3 shadow-soft transition-all duration-200',
       item.checked ? 'border-border/30 opacity-50' : 'border-border/60',
     )}>
       {/* Custom checkbox */}
       <button
         onClick={onToggle}
         className={cn(
-          'h-6 w-6 shrink-0 rounded-full border-2 flex items-center justify-center transition-all',
+          'h-6 w-6 shrink-0 rounded-full border-2 flex items-center justify-center transition-all duration-150 active:scale-90',
           item.checked
             ? 'bg-[#0f766e] border-[#0f766e]'
-            : 'border-gray-300 hover:border-[#0f766e]',
+            : 'border-border hover:border-[#0f766e]',
         )}
       >
         {item.checked && (
@@ -208,17 +207,20 @@ function ShoppingItemRow({ item, onToggle, onDelete }: ShoppingItemRowProps) {
       </button>
 
       <div className="flex-1 min-w-0">
-        <p className={cn('text-sm font-medium text-gray-900 truncate', item.checked && 'line-through text-gray-400')}>
+        <p className={cn(
+          'text-sm font-medium text-foreground truncate transition-all duration-200',
+          item.checked && 'line-through text-muted-foreground',
+        )}>
           {item.name}
         </p>
         {item.quantity && (
-          <p className="text-xs text-gray-400">{item.quantity}</p>
+          <p className="text-xs text-muted-foreground">{item.quantity}</p>
         )}
       </div>
 
       <button
         onClick={onDelete}
-        className="shrink-0 text-gray-300 hover:text-red-400 p-1 rounded-lg transition"
+        className="shrink-0 text-foreground-5 hover:text-red-400 p-1 rounded-lg transition-colors duration-150 active:scale-90"
       >
         <Trash2 className="h-4 w-4" />
       </button>
