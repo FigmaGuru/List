@@ -23,7 +23,7 @@ const config: Config = {
           900: '#1e4845',
         },
         primary: {
-          DEFAULT: '#7ececa',
+          DEFAULT: '#0f766e',
           foreground: '#ffffff',
         },
         background: '#f9fafb',
@@ -31,7 +31,7 @@ const config: Config = {
         muted: '#f3f4f6',
         'muted-foreground': '#9ca3af',
         border: '#e5e7eb',
-        ring: '#7ececa',
+        ring: '#0f766e',
       },
       fontFamily: {
         sans: [
@@ -52,7 +52,7 @@ const config: Config = {
       boxShadow: {
         'soft': '0 2px 12px 0 rgba(0,0,0,0.06)',
         'card': '0 1px 4px 0 rgba(0,0,0,0.05), 0 4px 16px 0 rgba(0,0,0,0.06)',
-        'fab': '0 4px 20px 0 rgba(126,206,202,0.45)',
+        'fab': '0 4px 20px 0 rgba(15,118,110,0.35)',
       },
       keyframes: {
         'fade-in': {

@@ -51,7 +51,7 @@ export default function MealLibrary() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search meals…"
-            className="w-full h-11 pl-10 pr-4 rounded-xl bg-muted border-0 text-sm focus:outline-none focus:ring-2 focus:ring-[#7ececa]"
+            className="w-full h-11 pl-10 pr-4 rounded-xl bg-muted border-0 text-sm focus:outline-none focus:ring-2 focus:ring-[#0f766e]"
           />
         </div>
 
@@ -64,7 +64,7 @@ export default function MealLibrary() {
               className={cn(
                 'shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition',
                 filter === f.value
-                  ? 'bg-[#7ececa] text-white'
+                  ? 'bg-[#0f766e] text-white'
                   : 'bg-muted text-gray-500 hover:bg-gray-200',
               )}
             >
@@ -79,7 +79,7 @@ export default function MealLibrary() {
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center px-6">
             <div className="h-20 w-20 rounded-3xl bg-[#e8f8f7] flex items-center justify-center mb-4">
-              <UtensilsCrossed className="h-9 w-9 text-[#7ececa]" />
+              <UtensilsCrossed className="h-9 w-9 text-[#0f766e]" />
             </div>
             <p className="font-semibold text-gray-700">No meals found</p>
             <p className="text-sm text-gray-400 mt-1">Try adjusting your search or add a new meal</p>

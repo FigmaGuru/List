@@ -60,7 +60,7 @@ function AddItemDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v
                   className={cn(
                     'px-3 py-1.5 rounded-full text-sm font-medium transition',
                     category === c
-                      ? 'bg-[#7ececa] text-white'
+                      ? 'bg-[#0f766e] text-white'
                       : 'bg-muted text-gray-500 hover:bg-gray-200',
                   )}
                 >
@@ -125,7 +125,7 @@ export default function ShoppingList() {
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="h-20 w-20 rounded-3xl bg-[#e8f8f7] flex items-center justify-center mb-4">
-              <ShoppingCart className="h-9 w-9 text-[#7ececa]" />
+              <ShoppingCart className="h-9 w-9 text-[#0f766e]" />
             </div>
             <p className="font-semibold text-gray-700">List is empty</p>
             <p className="text-sm text-gray-400 mt-1">Tap + to add your first item</p>
@@ -196,8 +196,8 @@ function ShoppingItemRow({ item, onToggle, onDelete }: ShoppingItemRowProps) {
         className={cn(
           'h-6 w-6 shrink-0 rounded-full border-2 flex items-center justify-center transition-all',
           item.checked
-            ? 'bg-[#7ececa] border-[#7ececa]'
-            : 'border-gray-300 hover:border-[#7ececa]',
+            ? 'bg-[#0f766e] border-[#0f766e]'
+            : 'border-gray-300 hover:border-[#0f766e]',
         )}
       >
         {item.checked && (
