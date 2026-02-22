@@ -103,7 +103,7 @@ export default function Articles() {
         {articles.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="h-20 w-20 rounded-3xl bg-[#e8f8f7] flex items-center justify-center mb-4">
-              <BookOpen className="h-9 w-9 text-[#7ececa]" />
+              <BookOpen className="h-9 w-9 text-[#0f766e]" />
             </div>
             <p className="font-semibold text-gray-700">No saved links yet</p>
             <p className="text-sm text-gray-400 mt-1">Save recipe ideas and articles here</p>
@@ -136,7 +136,7 @@ export default function Articles() {
 
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-gray-900 text-sm leading-snug">{article.title}</p>
-                    <p className="text-xs text-[#7ececa] mt-0.5 truncate">{domain}</p>
+                    <p className="text-xs text-[#0f766e] mt-0.5 truncate">{domain}</p>
                     {article.notes && (
                       <p className="text-sm text-gray-500 mt-1.5 leading-relaxed">{article.notes}</p>
                     )}
@@ -152,7 +152,7 @@ export default function Articles() {
                       href={article.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-2 rounded-xl bg-[#e8f8f7] text-[#7ececa] hover:bg-[#ccf0ee] transition"
+                      className="p-2 rounded-xl bg-[#e8f8f7] text-[#0f766e] hover:bg-[#ccede9] transition"
                     >
                       <ExternalLink className="h-4 w-4" />
                     </a>

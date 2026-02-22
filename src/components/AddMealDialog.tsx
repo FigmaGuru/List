@@ -86,7 +86,7 @@ export function AddMealDialog({ open, onOpenChange, addToDate }: AddMealDialogPr
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              className="h-20 w-20 shrink-0 rounded-2xl border-2 border-dashed border-[#7ececa] bg-[#f0fbfa] flex flex-col items-center justify-center gap-1 text-[#7ececa] transition hover:bg-[#e8f8f7]"
+              className="h-20 w-20 shrink-0 rounded-2xl border-2 border-dashed border-[#0f766e] bg-[#f0fbfa] flex flex-col items-center justify-center gap-1 text-[#0f766e] transition hover:bg-[#e8f8f7]"
             >
               {photo
                 ? <img src={photo} alt="preview" className="h-full w-full rounded-2xl object-cover" />
@@ -124,7 +124,7 @@ export function AddMealDialog({ open, onOpenChange, addToDate }: AddMealDialogPr
                   onClick={() => setCategory(c.value)}
                   className={`flex-1 flex flex-col items-center gap-1 rounded-2xl border-2 py-2.5 text-sm font-medium transition ${
                     category === c.value
-                      ? 'border-[#7ececa] bg-[#e8f8f7] text-[#2ea29b]'
+                      ? 'border-[#0f766e] bg-[#e8f8f7] text-[#0f766e]'
                       : 'border-border bg-surface text-gray-500'
                   }`}
                 >

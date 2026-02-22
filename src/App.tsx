@@ -10,7 +10,7 @@ const Articles     = lazy(() => import('@/pages/Articles'))
 function PageLoader() {
   return (
     <div className="flex flex-1 items-center justify-center">
-      <div className="h-8 w-8 rounded-full border-2 border-[#7ececa] border-t-transparent animate-spin" />
+      <div className="h-8 w-8 rounded-full border-2 border-[#0f766e] border-t-transparent animate-spin" />
     </div>
   )
 }
