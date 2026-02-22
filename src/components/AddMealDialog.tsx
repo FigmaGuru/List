@@ -1,11 +1,10 @@
 import { useState, useRef } from 'react'
-import { Camera, X } from 'lucide-react'
+import { Camera } from 'lucide-react'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { useStore } from '@/store/useStore'
 import type { MealCategory } from '@/data/meals'
@@ -13,7 +12,6 @@ import type { MealCategory } from '@/data/meals'
 interface AddMealDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  /** If set, the created meal is immediately added to this date */
   addToDate?: string
 }
 
@@ -28,13 +26,8 @@ export function AddMealDialog({ open, onOpenChange, addToDate }: AddMealDialogPr
   const addMealToDay = useStore((s) => s.addMealToDay)
 
   const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
   const [category, setCategory] = useState<MealCategory>('pasta')
-  const [ingredients, setIngredients] = useState('')
-  const [tags, setTags] = useState('')
   const [photo, setPhoto] = useState<string | undefined>()
-  const [emoji, setEmoji] = useState('🍽️')
-
   const fileRef = useRef<HTMLInputElement>(null)
 
   function handlePhoto(e: React.ChangeEvent<HTMLInputElement>) {
@@ -48,27 +41,19 @@ export function AddMealDialog({ open, onOpenChange, addToDate }: AddMealDialogPr
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!name.trim()) return
-
     const id = addMeal({
       name: name.trim(),
-      description: description.trim(),
+      description: '',
       category,
-      emoji,
-      ingredients: ingredients.split(',').map((s) => s.trim()).filter(Boolean),
-      tags: tags.split(',').map((s) => s.trim()).filter(Boolean),
+      emoji: CATEGORIES.find((c) => c.value === category)?.emoji ?? '🍽️',
+      ingredients: [],
+      tags: [],
       photo,
     })
-
     if (addToDate) addMealToDay(addToDate, id)
-
-    // reset
     setName('')
-    setDescription('')
     setCategory('pasta')
-    setIngredients('')
-    setTags('')
     setPhoto(undefined)
-    setEmoji('🍽️')
     onOpenChange(false)
   }
 
@@ -81,35 +66,30 @@ export function AddMealDialog({ open, onOpenChange, addToDate }: AddMealDialogPr
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Photo upload */}
-          <div className="flex gap-3 items-start">
+          {/* Photo + name row */}
+          <div className="flex gap-3 items-center">
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              className="h-20 w-20 shrink-0 rounded-2xl border-2 border-dashed border-[#7ececa] bg-[#f0fbfa] flex flex-col items-center justify-center gap-1 text-[#7ececa] transition hover:bg-[#e8f8f7]"
+              className="h-20 w-20 shrink-0 rounded-2xl border-2 border-dashed border-[#7ececa] bg-[#f0fbfa] dark:bg-[#1a3a38] flex flex-col items-center justify-center gap-1 text-[#7ececa] transition hover:bg-[#e8f8f7] dark:hover:bg-[#1f4542] overflow-hidden"
             >
               {photo
-                ? <img src={photo} alt="preview" className="h-full w-full rounded-2xl object-cover" />
-                : <>
-                    <Camera className="h-5 w-5" />
-                    <span className="text-[10px] font-medium">Photo</span>
-                  </>
+                ? <img src={photo} alt="preview" className="h-full w-full object-cover" />
+                : <><Camera className="h-5 w-5" /><span className="text-[10px] font-medium">Photo</span></>
               }
             </button>
             <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handlePhoto} />
 
-            <div className="flex-1 space-y-2">
-              <div>
-                <Label htmlFor="meal-name">Name *</Label>
-                <Input
-                  id="meal-name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Spaghetti Bolognese"
-                  className="mt-1"
-                  required
-                />
-              </div>
+            <div className="flex-1">
+              <Label htmlFor="meal-name">Name *</Label>
+              <Input
+                id="meal-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Spaghetti Bolognese"
+                className="mt-1"
+                required
+              />
             </div>
           </div>
 
@@ -122,11 +102,12 @@ export function AddMealDialog({ open, onOpenChange, addToDate }: AddMealDialogPr
                   key={c.value}
                   type="button"
                   onClick={() => setCategory(c.value)}
-                  className={`flex-1 flex flex-col items-center gap-1 rounded-2xl border-2 py-2.5 text-sm font-medium transition ${
+                  className={[
+                    'flex-1 flex flex-col items-center gap-1 rounded-2xl border-2 py-2.5 text-sm font-medium transition',
                     category === c.value
-                      ? 'border-[#7ececa] bg-[#e8f8f7] text-[#2ea29b]'
-                      : 'border-border bg-surface text-gray-500'
-                  }`}
+                      ? 'border-[#7ececa] bg-[#e8f8f7] dark:bg-[#1a3a38] text-[#2ea29b]'
+                      : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400',
+                  ].join(' ')}
                 >
                   <span className="text-xl">{c.emoji}</span>
                   {c.label}
@@ -135,44 +116,8 @@ export function AddMealDialog({ open, onOpenChange, addToDate }: AddMealDialogPr
             </div>
           </div>
 
-          {/* Description */}
-          <div>
-            <Label htmlFor="meal-desc">Description</Label>
-            <Textarea
-              id="meal-desc"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="A short description…"
-              className="mt-1 min-h-[70px]"
-            />
-          </div>
-
-          {/* Ingredients */}
-          <div>
-            <Label htmlFor="meal-ing">Ingredients</Label>
-            <Input
-              id="meal-ing"
-              value={ingredients}
-              onChange={(e) => setIngredients(e.target.value)}
-              placeholder="pasta, beef, tomatoes… (comma separated)"
-              className="mt-1"
-            />
-          </div>
-
-          {/* Tags */}
-          <div>
-            <Label htmlFor="meal-tags">Tags</Label>
-            <Input
-              id="meal-tags"
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
-              placeholder="quick, family favourite… (comma separated)"
-              className="mt-1"
-            />
-          </div>
-
           <Button type="submit" className="w-full" size="lg">
-            {addToDate ? 'Add & Add to Today' : 'Add Meal'}
+            {addToDate ? 'Add to Plan' : 'Add Meal'}
           </Button>
         </form>
       </DialogContent>

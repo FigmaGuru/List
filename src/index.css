@@ -9,19 +9,27 @@
   }
 
   html {
-    @apply bg-background;
     font-size: 16px;
     -webkit-text-size-adjust: 100%;
   }
 
   body {
-    @apply bg-background text-gray-900 font-sans;
+    @apply font-sans;
+    background-color: #f9fafb;
+    color: #111827;
     overscroll-behavior: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Safe area support for notched phones */
+  @media (prefers-color-scheme: dark) {
+    html { color-scheme: dark; }
+    body {
+      background-color: #0d1117;
+      color: #f1f5f9;
+    }
+  }
+
   #root {
     min-height: 100dvh;
     min-height: -webkit-fill-available;
@@ -43,8 +51,5 @@
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
-  }
-  .touch-action-pan-y {
-    touch-action: pan-y;
   }
 }

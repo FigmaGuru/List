@@ -33,24 +33,20 @@ function AddItemDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v
           <DialogTitle>Add Item</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <Input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Item name…"
+            autoFocus
+            required
+          />
+          <Input
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            placeholder="Quantity (e.g. 500g, 2 packs)"
+          />
           <div>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Item name…"
-              autoFocus
-              required
-            />
-          </div>
-          <div>
-            <Input
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-              placeholder="Quantity (e.g. 500g, 2 packs)"
-            />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-gray-700 mb-2">Category</p>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</p>
             <div className="flex flex-wrap gap-2">
               {CATEGORIES.map((c) => (
                 <button
@@ -61,7 +57,7 @@ function AddItemDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v
                     'px-3 py-1.5 rounded-full text-sm font-medium transition',
                     category === c
                       ? 'bg-[#7ececa] text-white'
-                      : 'bg-muted text-gray-500 hover:bg-gray-200',
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700',
                   )}
                 >
                   {c}
@@ -87,36 +83,36 @@ export default function ShoppingList() {
   const unchecked = items.filter((i) => !i.checked)
   const checked = items.filter((i) => i.checked)
 
-  // Group unchecked by category
   const grouped = CATEGORIES.reduce<Record<string, typeof items>>((acc, cat) => {
     const catItems = unchecked.filter((i) => i.category === cat)
     if (catItems.length) acc[cat] = catItems
     return acc
   }, {})
 
-  // Also show "Other" group for uncategorised
   const allGroupedCategories = Object.keys(grouped)
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-950">
       {/* Header */}
-      <header className="pt-safe bg-white border-b border-border/60 px-4 pt-4 pb-3">
-        <div className="flex items-center justify-between">
+      <header className="pt-safe bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-5 pt-5 pb-4">
+        <div className="flex items-end justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Shopping</h1>
-            <p className="text-sm text-gray-400 mt-0.5">
-              {unchecked.length} item{unchecked.length !== 1 ? 's' : ''} remaining
-            </p>
+            <p className="text-xs font-semibold text-[#7ececa] uppercase tracking-widest mb-1">Weekly</p>
+            <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Shopping</h1>
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-end gap-3 mb-1">
             {checked.length > 0 && (
-              <Button size="sm" variant="outline" onClick={clearCheckedItems}>
-                <CheckCheck className="h-3.5 w-3.5" />
-              </Button>
+              <button
+                onClick={clearCheckedItems}
+                className="flex items-center gap-1.5 text-sm font-medium text-gray-400 dark:text-gray-500 hover:text-red-400 transition"
+              >
+                <CheckCheck className="h-4 w-4" />
+                Clear done
+              </button>
             )}
-            <Button size="sm" onClick={() => setAddOpen(true)}>
-              <Plus className="h-4 w-4" />
-            </Button>
+            <span className="text-sm font-medium text-gray-400 dark:text-gray-500">
+              {unchecked.length} left
+            </span>
           </div>
         </div>
       </header>
@@ -124,18 +120,17 @@ export default function ShoppingList() {
       <div className="flex-1 overflow-y-auto pb-28 scrollbar-hide px-4 py-4">
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="h-20 w-20 rounded-3xl bg-[#e8f8f7] flex items-center justify-center mb-4">
+            <div className="h-20 w-20 rounded-3xl bg-[#e8f8f7] dark:bg-[#1a3a38] flex items-center justify-center mb-4">
               <ShoppingCart className="h-9 w-9 text-[#7ececa]" />
             </div>
-            <p className="font-semibold text-gray-700">List is empty</p>
-            <p className="text-sm text-gray-400 mt-1">Tap + to add your first item</p>
+            <p className="font-semibold text-gray-700 dark:text-gray-200">List is empty</p>
+            <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Tap + to add your first item</p>
           </div>
         ) : (
           <>
-            {/* Unchecked — grouped */}
             {allGroupedCategories.map((cat) => (
               <section key={cat} className="mb-5">
-                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2 px-1">
+                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2 px-1">
                   {cat}
                 </p>
                 <div className="space-y-2">
@@ -151,10 +146,9 @@ export default function ShoppingList() {
               </section>
             ))}
 
-            {/* Checked */}
             {checked.length > 0 && (
               <section className="mt-6">
-                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2 px-1">
+                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2 px-1">
                   Done ({checked.length})
                 </p>
                 <div className="space-y-2">
@@ -173,6 +167,14 @@ export default function ShoppingList() {
         )}
       </div>
 
+      {/* FAB */}
+      <button
+        onClick={() => setAddOpen(true)}
+        className="fixed bottom-24 right-5 z-30 h-14 w-14 rounded-full bg-[#7ececa] text-white shadow-fab flex items-center justify-center active:scale-95 transition-transform"
+      >
+        <Plus className="h-6 w-6" strokeWidth={2.5} />
+      </button>
+
       <AddItemDialog open={addOpen} onOpenChange={setAddOpen} />
     </div>
   )
@@ -187,17 +189,19 @@ interface ShoppingItemRowProps {
 function ShoppingItemRow({ item, onToggle, onDelete }: ShoppingItemRowProps) {
   return (
     <div className={cn(
-      'flex items-center gap-3 rounded-2xl bg-white border px-4 py-3 shadow-soft transition-all',
-      item.checked ? 'border-border/30 opacity-50' : 'border-border/60',
+      'flex items-center gap-3 rounded-2xl px-4 py-3 border transition-all',
+      'bg-white dark:bg-gray-800',
+      item.checked
+        ? 'border-gray-100 dark:border-gray-700/50 opacity-50'
+        : 'border-gray-100 dark:border-gray-700 shadow-soft',
     )}>
-      {/* Custom checkbox */}
       <button
         onClick={onToggle}
         className={cn(
           'h-6 w-6 shrink-0 rounded-full border-2 flex items-center justify-center transition-all',
           item.checked
             ? 'bg-[#7ececa] border-[#7ececa]'
-            : 'border-gray-300 hover:border-[#7ececa]',
+            : 'border-gray-300 dark:border-gray-600 hover:border-[#7ececa]',
         )}
       >
         {item.checked && (
@@ -208,17 +212,22 @@ function ShoppingItemRow({ item, onToggle, onDelete }: ShoppingItemRowProps) {
       </button>
 
       <div className="flex-1 min-w-0">
-        <p className={cn('text-sm font-medium text-gray-900 truncate', item.checked && 'line-through text-gray-400')}>
+        <p className={cn(
+          'text-sm font-medium truncate',
+          item.checked
+            ? 'line-through text-gray-400 dark:text-gray-600'
+            : 'text-gray-900 dark:text-gray-100',
+        )}>
           {item.name}
         </p>
         {item.quantity && (
-          <p className="text-xs text-gray-400">{item.quantity}</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500">{item.quantity}</p>
         )}
       </div>
 
       <button
         onClick={onDelete}
-        className="shrink-0 text-gray-300 hover:text-red-400 p-1 rounded-lg transition"
+        className="shrink-0 text-gray-300 dark:text-gray-600 hover:text-red-400 p-1 rounded-lg transition"
       >
         <Trash2 className="h-4 w-4" />
       </button>
