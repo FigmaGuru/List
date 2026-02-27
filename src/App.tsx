@@ -1,6 +1,7 @@
 import { HashRouter, Routes, Route } from 'react-router-dom'
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, useState, useEffect } from 'react'
 import { BottomNav } from '@/components/BottomNav'
+import { startFirestoreSync } from '@/lib/firestoreSync'
 
 const MealPlan     = lazy(() => import('@/pages/MealPlan'))
 const MealLibrary  = lazy(() => import('@/pages/MealLibrary'))
@@ -16,6 +17,21 @@ function PageLoader() {
 }
 
 export default function App() {
+  const [synced, setSynced] = useState(false)
+
+  useEffect(() => {
+    const unsub = startFirestoreSync(() => setSynced(true))
+    return unsub
+  }, [])
+
+  if (!synced) {
+    return (
+      <div className="flex h-dvh items-center justify-center bg-background">
+        <div className="h-8 w-8 rounded-full border-2 border-[#7ececa] border-t-transparent animate-spin" />
+      </div>
+    )
+  }
+
   return (
     <HashRouter>
       <div className="flex flex-col h-dvh overflow-hidden bg-background">

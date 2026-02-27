@@ -45,6 +45,9 @@
   .pt-safe {
     padding-top: env(safe-area-inset-top, 0px);
   }
+  .pt-safe-header {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 2rem);
+  }
   .scrollbar-hide {
     scrollbar-width: none;
     -ms-overflow-style: none;

@@ -43,11 +43,8 @@ export function AddMealDialog({ open, onOpenChange, addToDate }: AddMealDialogPr
     if (!name.trim()) return
     const id = addMeal({
       name: name.trim(),
-      description: '',
       category,
       emoji: CATEGORIES.find((c) => c.value === category)?.emoji ?? '🍽️',
-      ingredients: [],
-      tags: [],
       photo,
     })
     if (addToDate) addMealToDay(addToDate, id)
@@ -71,7 +68,7 @@ export function AddMealDialog({ open, onOpenChange, addToDate }: AddMealDialogPr
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              className="h-20 w-20 shrink-0 rounded-2xl border-2 border-dashed border-[#7ececa] bg-[#f0fbfa] dark:bg-[#1a3a38] flex flex-col items-center justify-center gap-1 text-[#7ececa] transition hover:bg-[#e8f8f7] dark:hover:bg-[#1f4542] overflow-hidden"
+              className="h-20 w-20 shrink-0 rounded-2xl border-2 border-dashed border-[#226b66] bg-[#f0fbfa] dark:bg-[#1a3a38] flex flex-col items-center justify-center gap-1 text-[#226b66] transition hover:bg-[#e8f8f7] dark:hover:bg-[#1f4542] overflow-hidden"
             >
               {photo
                 ? <img src={photo} alt="preview" className="h-full w-full object-cover" />
@@ -105,7 +102,7 @@ export function AddMealDialog({ open, onOpenChange, addToDate }: AddMealDialogPr
                   className={[
                     'flex-1 flex flex-col items-center gap-1 rounded-2xl border-2 py-2.5 text-sm font-medium transition',
                     category === c.value
-                      ? 'border-[#7ececa] bg-[#e8f8f7] dark:bg-[#1a3a38] text-[#2ea29b]'
+                      ? 'border-[#226b66] bg-[#e8f8f7] dark:bg-[#1a3a38] text-[#226b66]'
                       : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400',
                   ].join(' ')}
                 >

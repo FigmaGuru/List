@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { ChevronLeft, ChevronRight, Plus, UtensilsCrossed } from 'lucide-react'
 import { useStore } from '@/store/useStore'
-import { Button } from '@/components/ui/button'
 import { MealCard } from '@/components/MealCard'
 import { AddMealDialog } from '@/components/AddMealDialog'
 import {
@@ -37,7 +36,7 @@ function AddFromLibrarySheet({
           placeholder="Search meals…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full h-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#7ececa] mb-3"
+          className="w-full h-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#226b66] mb-3"
         />
         <div className="space-y-2 overflow-y-auto pr-0.5">
           {filtered.map((meal) => {
@@ -62,7 +61,7 @@ function AddFromLibrarySheet({
                   {meal.name}
                 </p>
                 {alreadyAdded && (
-                  <span className="text-xs text-[#2ea29b] font-medium shrink-0">Added</span>
+                  <span className="text-xs text-[#226b66] font-medium shrink-0">Added</span>
                 )}
               </button>
             )
@@ -98,22 +97,12 @@ export default function MealPlan() {
   return (
     <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-950">
       {/* Header */}
-      <header className="pt-safe bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-5 pt-5 pb-4">
-        <div className="flex items-end justify-between">
-          <div>
-            <p className="text-xs font-semibold text-[#7ececa] uppercase tracking-widest mb-1">
-              {MONTH_NAMES[selectedDateObj.getMonth()]} {selectedDateObj.getFullYear()}
-            </p>
-            <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Meal Plan</h1>
-          </div>
-          <div className="flex gap-2 mb-1">
-            <Button size="sm" variant="outline" onClick={() => setAddNewOpen(true)}>
-              <Plus className="h-3.5 w-3.5" /> New
-            </Button>
-            <Button size="sm" onClick={() => setLibraryOpen(true)}>
-              <Plus className="h-3.5 w-3.5" /> Library
-            </Button>
-          </div>
+      <header className="pt-safe-header bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-5 pb-4">
+        <div>
+          <p className="text-xs font-semibold text-[#226b66] uppercase tracking-widest mb-1">
+            {MONTH_NAMES[selectedDateObj.getMonth()]} {selectedDateObj.getFullYear()}
+          </p>
+          <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Meal Plan</h1>
         </div>
       </header>
 
@@ -141,9 +130,9 @@ export default function MealPlan() {
                   className={cn(
                     'flex flex-1 flex-col items-center gap-1 py-2 rounded-2xl transition-all duration-200',
                     selected
-                      ? 'bg-[#7ececa] text-white'
+                      ? 'bg-[#226b66] text-white'
                       : todayDate
-                      ? 'bg-[#e8f8f7] dark:bg-[#1a3a38] text-[#2ea29b]'
+                      ? 'bg-[#e8f8f7] dark:bg-[#1a3a38] text-[#226b66]'
                       : 'text-gray-500 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800',
                   )}
                 >
@@ -156,7 +145,7 @@ export default function MealPlan() {
                   {hasMeals && (
                     <span className={cn(
                       'h-1.5 w-1.5 rounded-full',
-                      selected ? 'bg-white/70' : 'bg-[#7ececa]',
+                      selected ? 'bg-white/70' : 'bg-[#226b66]',
                     )} />
                   )}
                 </button>
@@ -188,7 +177,7 @@ export default function MealPlan() {
         {dayMeals.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <div className="h-20 w-20 rounded-3xl bg-[#e8f8f7] dark:bg-[#1a3a38] flex items-center justify-center mb-4">
-              <UtensilsCrossed className="h-9 w-9 text-[#7ececa]" />
+              <UtensilsCrossed className="h-9 w-9 text-[#226b66]" />
             </div>
             <p className="font-semibold text-gray-700 dark:text-gray-200">Nothing planned yet</p>
             <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Tap Library to add meals</p>
@@ -205,6 +194,22 @@ export default function MealPlan() {
             ))}
           </div>
         )}
+      </div>
+
+      {/* FABs */}
+      <div className="fixed bottom-24 right-5 z-30 flex flex-col gap-3 items-end">
+        <button
+          onClick={() => setAddNewOpen(true)}
+          className="h-12 px-5 rounded-full border-2 border-[#226b66] bg-white dark:bg-gray-900 text-[#226b66] flex items-center gap-2 shadow-soft text-sm font-semibold active:scale-95 transition-transform"
+        >
+          <Plus className="h-4 w-4" strokeWidth={2.5} /> New
+        </button>
+        <button
+          onClick={() => setLibraryOpen(true)}
+          className="h-12 px-5 rounded-full bg-[#226b66] text-white flex items-center gap-2 shadow-fab text-sm font-semibold active:scale-95 transition-transform"
+        >
+          <Plus className="h-4 w-4" strokeWidth={2.5} /> Library
+        </button>
       </div>
 
       <AddFromLibrarySheet open={libraryOpen} onOpenChange={setLibraryOpen} date={selectedDate} />

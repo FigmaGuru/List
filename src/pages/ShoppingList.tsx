@@ -8,21 +8,19 @@ import {
 } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
 
-const CATEGORIES = ['Bakery', 'Dairy', 'Meat', 'Pantry', 'Produce', 'Frozen', 'Other']
+const CATEGORIES = ['TJs', 'Whole Foods', 'Instacart']
 
 function AddItemDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   const addShoppingItem = useStore((s) => s.addShoppingItem)
   const [name, setName] = useState('')
-  const [quantity, setQuantity] = useState('')
-  const [category, setCategory] = useState('Other')
+  const [category, setCategory] = useState('TJs')
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!name.trim()) return
-    addShoppingItem({ name: name.trim(), quantity: quantity.trim(), category })
+    addShoppingItem({ name: name.trim(), category })
     setName('')
-    setQuantity('')
-    setCategory('Other')
+    setCategory('TJs')
     onOpenChange(false)
   }
 
@@ -40,23 +38,18 @@ function AddItemDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v
             autoFocus
             required
           />
-          <Input
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            placeholder="Quantity (e.g. 500g, 2 packs)"
-          />
           <div>
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</p>
-            <div className="flex flex-wrap gap-2">
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Store</p>
+            <div className="flex gap-2">
               {CATEGORIES.map((c) => (
                 <button
                   key={c}
                   type="button"
                   onClick={() => setCategory(c)}
                   className={cn(
-                    'px-3 py-1.5 rounded-full text-sm font-medium transition',
+                    'flex-1 px-3 py-1.5 rounded-full text-sm font-medium transition',
                     category === c
-                      ? 'bg-[#7ececa] text-white'
+                      ? 'bg-[#226b66] text-white'
                       : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700',
                   )}
                 >
@@ -89,12 +82,16 @@ export default function ShoppingList() {
     return acc
   }, {})
 
+  // Items with unrecognised categories fall into first store
+  const ungrouped = unchecked.filter((i) => !CATEGORIES.includes(i.category))
+  if (ungrouped.length) grouped[CATEGORIES[0]] = [...(grouped[CATEGORIES[0]] ?? []), ...ungrouped]
+
   const allGroupedCategories = Object.keys(grouped)
 
   return (
     <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-950">
       {/* Header */}
-      <header className="pt-safe bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-5 pt-5 pb-4">
+      <header className="pt-safe-header bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-5 pb-4">
         <div className="flex items-end justify-between">
           <div>
             <p className="text-xs font-semibold text-[#7ececa] uppercase tracking-widest mb-1">Weekly</p>
@@ -170,7 +167,7 @@ export default function ShoppingList() {
       {/* FAB */}
       <button
         onClick={() => setAddOpen(true)}
-        className="fixed bottom-24 right-5 z-30 h-14 w-14 rounded-full bg-[#7ececa] text-white shadow-fab flex items-center justify-center active:scale-95 transition-transform"
+        className="fixed bottom-24 right-5 z-30 h-14 w-14 rounded-full bg-[#226b66] text-white shadow-fab flex items-center justify-center active:scale-95 transition-transform"
       >
         <Plus className="h-6 w-6" strokeWidth={2.5} />
       </button>
@@ -200,8 +197,8 @@ function ShoppingItemRow({ item, onToggle, onDelete }: ShoppingItemRowProps) {
         className={cn(
           'h-6 w-6 shrink-0 rounded-full border-2 flex items-center justify-center transition-all',
           item.checked
-            ? 'bg-[#7ececa] border-[#7ececa]'
-            : 'border-gray-300 dark:border-gray-600 hover:border-[#7ececa]',
+            ? 'bg-[#226b66] border-[#226b66]'
+            : 'border-gray-300 dark:border-gray-600 hover:border-[#226b66]',
         )}
       >
         {item.checked && (
@@ -220,9 +217,6 @@ function ShoppingItemRow({ item, onToggle, onDelete }: ShoppingItemRowProps) {
         )}>
           {item.name}
         </p>
-        {item.quantity && (
-          <p className="text-xs text-gray-400 dark:text-gray-500">{item.quantity}</p>
-        )}
       </div>
 
       <button
