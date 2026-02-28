@@ -68,7 +68,7 @@ export default function Articles() {
   return (
     <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-950">
       {/* Header */}
-      <header className="pt-safe bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-5 pt-5 pb-4">
+      <header className="pt-safe-header bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-5 pb-7">
         <div className="flex items-end justify-between">
           <div>
             <p className="text-xs font-semibold text-[#7ececa] uppercase tracking-widest mb-1">Inspiration</p>
