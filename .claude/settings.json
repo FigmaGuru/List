@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(lsof:*)",
+      "Bash(open:*)",
+      "Bash(npx tsc:*)",
+      "Bash(curl:*)",
+      "Bash(ipconfig getifaddr:*)"
+    ],
+    "additionalDirectories": [
+      "/tmp"
+    ]
+  }
+}
