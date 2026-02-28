@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ChevronLeft, ChevronRight, Plus, UtensilsCrossed, X } from 'lucide-react'
+import { Check, ChevronLeft, ChevronRight, Plus, UtensilsCrossed, X } from 'lucide-react'
 import { useStore } from '@/store/useStore'
 import { AddMealDialog } from '@/components/AddMealDialog'
 import {
@@ -19,10 +19,17 @@ function AddFromLibrarySheet({
   const plan = useStore((s) => s.plan[date])
   const addMealToDay = useStore((s) => s.addMealToDay)
   const [search, setSearch] = useState('')
+  const [addedMealId, setAddedMealId] = useState<string | null>(null)
 
   const filtered = meals.filter((m) =>
     m.name.toLowerCase().includes(search.toLowerCase()),
   )
+
+  function handleAdd(mealId: string) {
+    addMealToDay(date, mealId)
+    setAddedMealId(mealId)
+    setTimeout(() => onOpenChange(false), 900)
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -40,15 +47,18 @@ function AddFromLibrarySheet({
         <div className="space-y-2 overflow-y-auto pr-0.5">
           {filtered.map((meal) => {
             const alreadyAdded = plan?.mealIds.includes(meal.id)
+            const justAdded = addedMealId === meal.id
             return (
               <button
                 key={meal.id}
-                onClick={() => { if (!alreadyAdded) { addMealToDay(date, meal.id); onOpenChange(false) } }}
+                onClick={() => { if (!alreadyAdded && !addedMealId) handleAdd(meal.id) }}
                 className={cn(
                   'w-full flex items-center gap-3 rounded-2xl p-3 text-left transition',
-                  alreadyAdded
-                    ? 'bg-[#e8f8f7] dark:bg-[#1a3a38] opacity-60 cursor-default'
-                    : 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700',
+                  justAdded
+                    ? 'bg-[#e8f8f7] dark:bg-[#1a3a38] border border-[#226b66]/40'
+                    : alreadyAdded
+                      ? 'bg-[#e8f8f7] dark:bg-[#1a3a38] opacity-60 cursor-default'
+                      : 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700',
                 )}
               >
                 <span className="text-2xl shrink-0">
@@ -59,9 +69,13 @@ function AddFromLibrarySheet({
                 <p className="flex-1 font-semibold text-sm text-gray-900 dark:text-white truncate">
                   {meal.name}
                 </p>
-                {alreadyAdded && (
+                {justAdded ? (
+                  <span className="shrink-0 flex items-center gap-1 text-xs font-semibold text-[#226b66]">
+                    <Check className="h-4 w-4" strokeWidth={2.5} /> Done
+                  </span>
+                ) : alreadyAdded ? (
                   <span className="text-xs text-[#226b66] font-medium shrink-0">Added</span>
-                )}
+                ) : null}
               </button>
             )
           })}

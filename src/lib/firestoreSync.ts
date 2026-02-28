@@ -7,6 +7,8 @@ const STATE_DOC = doc(db, 'shared', 'state')
 
 // Prevents our own Firestore writes from triggering a redundant local update
 let syncingFromRemote = false
+// Debounce timer — batches rapid successive state changes into one Firestore write
+let writeTimer: ReturnType<typeof setTimeout> | null = null
 
 function pickSyncedState(state: ReturnType<typeof useStore.getState>) {
   return {
@@ -50,15 +52,25 @@ export function startFirestoreSync(onReady: () => void): () => void {
 
     // After the first snapshot, wire up local → Firestore writes
     if (!unsubStore) {
-      unsubStore = useStore.subscribe((state) => {
+      unsubStore = useStore.subscribe(() => {
         if (syncingFromRemote) return
-        setDoc(STATE_DOC, pickSyncedState(state)).catch(console.error)
+        // Debounce so that rapid successive updates (e.g. addMeal + addMealToDay
+        // called back-to-back) are batched into a single Firestore write.
+        // Without this, the first write (meals only) comes back as a snapshot and
+        // overwrites local state, wiping the plan entry added by addMealToDay.
+        if (writeTimer) clearTimeout(writeTimer)
+        writeTimer = setTimeout(() => {
+          writeTimer = null
+          if (syncingFromRemote) return
+          setDoc(STATE_DOC, pickSyncedState(useStore.getState())).catch(console.error)
+        }, 300)
       })
       onReady()
     }
   })
 
   return () => {
+    if (writeTimer) clearTimeout(writeTimer)
     unsubStore?.()
     unsubFirestore()
   }
