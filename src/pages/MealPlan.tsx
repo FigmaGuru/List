@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { ChevronLeft, ChevronRight, Plus, UtensilsCrossed } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, UtensilsCrossed, X } from 'lucide-react'
 import { useStore } from '@/store/useStore'
-import { MealCard } from '@/components/MealCard'
 import { AddMealDialog } from '@/components/AddMealDialog'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
@@ -79,141 +78,163 @@ export default function MealPlan() {
 
   const today = new Date()
   const [weekOffset, setWeekOffset] = useState(0)
-  const [selectedDate, setSelectedDate] = useState(formatDate(today))
-  const [libraryOpen, setLibraryOpen] = useState(false)
-  const [addNewOpen, setAddNewOpen] = useState(false)
+  const [libraryDate, setLibraryDate] = useState<string | null>(null)
+  const [addNewDate, setAddNewDate] = useState<string | null>(null)
 
   const refDate = new Date(today)
   refDate.setDate(today.getDate() + weekOffset * 7)
   const weekDates = getWeekDates(refDate)
 
-  const dayPlan = plan[selectedDate]
-  const dayMeals = (dayPlan?.mealIds ?? [])
-    .map((id) => meals.find((m) => m.id === id))
-    .filter(Boolean) as typeof meals
-
-  const selectedDateObj = new Date(selectedDate + 'T00:00:00')
+  // Month label: show month of the Monday, or range if week spans two months
+  const firstDay = weekDates[0]
+  const lastDay = weekDates[6]
+  const monthLabel =
+    firstDay.getMonth() === lastDay.getMonth()
+      ? `${MONTH_NAMES[firstDay.getMonth()]} ${firstDay.getFullYear()}`
+      : `${MONTH_NAMES[firstDay.getMonth()]} – ${MONTH_NAMES[lastDay.getMonth()]} ${lastDay.getFullYear()}`
 
   return (
     <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-950">
       {/* Header */}
       <header className="pt-safe-header bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-5 pb-4">
-        <div>
-          <p className="text-xs font-semibold text-[#226b66] uppercase tracking-widest mb-1">
-            {MONTH_NAMES[selectedDateObj.getMonth()]} {selectedDateObj.getFullYear()}
-          </p>
-          <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Meal Plan</h1>
-        </div>
+        <p className="text-xs font-semibold text-[#226b66] uppercase tracking-widest mb-1">
+          {monthLabel}
+        </p>
+        <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Meal Plan</h1>
       </header>
 
-      {/* Week strip */}
-      <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-2 py-3">
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => setWeekOffset((w) => w - 1)}
-            className="p-2 rounded-xl text-gray-400 dark:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
+      {/* Week navigation */}
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3 flex items-center justify-between">
+        <button
+          onClick={() => setWeekOffset((w) => w - 1)}
+          className="p-2 rounded-xl text-gray-400 dark:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </button>
+        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+          {firstDay.getDate()} {MONTH_NAMES[firstDay.getMonth()].slice(0, 3)} –{' '}
+          {lastDay.getDate()} {MONTH_NAMES[lastDay.getMonth()].slice(0, 3)}
+        </span>
+        <button
+          onClick={() => setWeekOffset((w) => w + 1)}
+          className="p-2 rounded-xl text-gray-400 dark:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+        >
+          <ChevronRight className="h-5 w-5" />
+        </button>
+      </div>
 
-          <div className="flex flex-1 gap-1">
-            {weekDates.map((date, i) => {
-              const iso = formatDate(date)
-              const hasMeals = (plan[iso]?.mealIds.length ?? 0) > 0
-              const selected = iso === selectedDate
-              const todayDate = isToday(date)
+      {/* Week overview — one card per day */}
+      <div className="flex-1 overflow-y-auto px-4 py-3 pb-28 space-y-2 scrollbar-hide">
+        {weekDates.map((date, i) => {
+          const iso = formatDate(date)
+          const dayPlan = plan[iso]
+          const dayMeals = (dayPlan?.mealIds ?? [])
+            .map((id) => meals.find((m) => m.id === id))
+            .filter(Boolean) as typeof meals
+          const todayDate = isToday(date)
 
-              return (
-                <button
-                  key={iso}
-                  onClick={() => setSelectedDate(iso)}
-                  className={cn(
-                    'flex flex-1 flex-col items-center gap-1 py-2 rounded-2xl transition-all duration-200',
-                    selected
-                      ? 'bg-[#226b66] text-white'
-                      : todayDate
-                      ? 'bg-[#e8f8f7] dark:bg-[#1a3a38] text-[#226b66]'
-                      : 'text-gray-500 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800',
-                  )}
-                >
-                  <span className="text-[10px] font-medium uppercase tracking-wide">
+          return (
+            <div
+              key={iso}
+              className={cn(
+                'rounded-2xl border transition-all',
+                todayDate
+                  ? 'bg-[#e8f8f7] dark:bg-[#1a3a38] border-[#226b66]/30'
+                  : 'bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800',
+              )}
+            >
+              {/* Day header */}
+              <div className="flex items-center justify-between px-4 pt-3 pb-2">
+                <div className="flex items-center gap-2">
+                  <span
+                    className={cn(
+                      'text-sm font-bold',
+                      todayDate ? 'text-[#226b66]' : 'text-gray-900 dark:text-white',
+                    )}
+                  >
                     {DAY_NAMES[i]}
                   </span>
-                  <span className="text-base font-bold leading-none">
-                    {date.getDate()}
+                  <span
+                    className={cn(
+                      'text-sm',
+                      todayDate ? 'text-[#226b66]' : 'text-gray-400 dark:text-gray-500',
+                    )}
+                  >
+                    {date.getDate()} {MONTH_NAMES[date.getMonth()].slice(0, 3)}
                   </span>
-                  {hasMeals && (
-                    <span className={cn(
-                      'h-1.5 w-1.5 rounded-full',
-                      selected ? 'bg-white/70' : 'bg-[#226b66]',
-                    )} />
+                  {todayDate && (
+                    <span className="text-[10px] font-semibold uppercase tracking-wide bg-[#226b66] text-white px-1.5 py-0.5 rounded-full">
+                      Today
+                    </span>
                   )}
-                </button>
-              )
-            })}
-          </div>
+                </div>
+                {/* Add buttons */}
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => setAddNewDate(iso)}
+                    className="h-7 px-2.5 rounded-full border border-[#226b66] text-[#226b66] text-xs font-semibold flex items-center gap-1 hover:bg-[#e8f8f7] dark:hover:bg-[#1a3a38] transition"
+                  >
+                    <Plus className="h-3 w-3" strokeWidth={2.5} /> New
+                  </button>
+                  <button
+                    onClick={() => setLibraryDate(iso)}
+                    className="h-7 px-2.5 rounded-full bg-[#226b66] text-white text-xs font-semibold flex items-center gap-1 hover:bg-[#1a5550] transition"
+                  >
+                    <Plus className="h-3 w-3" strokeWidth={2.5} /> Library
+                  </button>
+                </div>
+              </div>
 
-          <button
-            onClick={() => setWeekOffset((w) => w + 1)}
-            className="p-2 rounded-xl text-gray-400 dark:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
-        </div>
-      </div>
-
-      {/* Day label */}
-      <div className="px-5 pt-4 pb-2">
-        <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-          {isToday(selectedDateObj) ? 'Today' : DAY_NAMES[selectedDateObj.getDay() === 0 ? 6 : selectedDateObj.getDay() - 1]}
-        </p>
-        <p className="text-lg font-bold text-gray-900 dark:text-white">
-          {selectedDateObj.getDate()} {MONTH_NAMES[selectedDateObj.getMonth()]}
-        </p>
-      </div>
-
-      {/* Day meals */}
-      <div className="flex-1 overflow-y-auto px-4 pb-28 scrollbar-hide">
-        {dayMeals.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="h-20 w-20 rounded-3xl bg-[#e8f8f7] dark:bg-[#1a3a38] flex items-center justify-center mb-4">
-              <UtensilsCrossed className="h-9 w-9 text-[#226b66]" />
+              {/* Meals for this day */}
+              {dayMeals.length === 0 ? (
+                <div className="flex items-center gap-2 px-4 pb-3">
+                  <UtensilsCrossed className="h-4 w-4 text-gray-300 dark:text-gray-700 shrink-0" />
+                  <span className="text-xs text-gray-400 dark:text-gray-600">Nothing planned</span>
+                </div>
+              ) : (
+                <div className="px-3 pb-3 space-y-1.5">
+                  {dayMeals.map((meal) => (
+                    <div
+                      key={meal.id}
+                      className="flex items-center gap-2 rounded-xl bg-white/60 dark:bg-gray-800/60 px-3 py-2"
+                    >
+                      <span className="text-lg shrink-0 leading-none">
+                        {meal.photo
+                          ? <img src={meal.photo} alt="" className="h-6 w-6 rounded-lg object-cover" />
+                          : meal.emoji}
+                      </span>
+                      <span className="flex-1 text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
+                        {meal.name}
+                      </span>
+                      <button
+                        onClick={() => removeMealFromDay(iso, meal.id)}
+                        className="shrink-0 text-gray-300 dark:text-gray-700 hover:text-red-400 transition"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-            <p className="font-semibold text-gray-700 dark:text-gray-200">Nothing planned yet</p>
-            <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Tap Library to add meals</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {dayMeals.map((meal) => (
-              <MealCard
-                key={meal.id}
-                meal={meal}
-                compact
-                onDelete={() => removeMealFromDay(selectedDate, meal.id)}
-              />
-            ))}
-          </div>
-        )}
+          )
+        })}
       </div>
 
-      {/* FABs */}
-      <div className="fixed bottom-24 right-5 z-30 flex flex-col gap-3 items-end">
-        <button
-          onClick={() => setAddNewOpen(true)}
-          className="h-12 px-5 rounded-full border-2 border-[#226b66] bg-white dark:bg-gray-900 text-[#226b66] flex items-center gap-2 shadow-soft text-sm font-semibold active:scale-95 transition-transform"
-        >
-          <Plus className="h-4 w-4" strokeWidth={2.5} /> New
-        </button>
-        <button
-          onClick={() => setLibraryOpen(true)}
-          className="h-12 px-5 rounded-full bg-[#226b66] text-white flex items-center gap-2 shadow-fab text-sm font-semibold active:scale-95 transition-transform"
-        >
-          <Plus className="h-4 w-4" strokeWidth={2.5} /> Library
-        </button>
-      </div>
-
-      <AddFromLibrarySheet open={libraryOpen} onOpenChange={setLibraryOpen} date={selectedDate} />
-      <AddMealDialog open={addNewOpen} onOpenChange={setAddNewOpen} addToDate={selectedDate} />
+      {libraryDate && (
+        <AddFromLibrarySheet
+          open={!!libraryDate}
+          onOpenChange={(v) => { if (!v) setLibraryDate(null) }}
+          date={libraryDate}
+        />
+      )}
+      {addNewDate && (
+        <AddMealDialog
+          open={!!addNewDate}
+          onOpenChange={(v) => { if (!v) setAddNewDate(null) }}
+          addToDate={addNewDate}
+        />
+      )}
     </div>
   )
 }
