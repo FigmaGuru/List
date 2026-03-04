@@ -37,8 +37,12 @@ export function startFirestoreSync(onReady: () => void): () => void {
       const remote = snap.data()
       const current = pickSyncedState(useStore.getState())
 
-      // Only update local state if the data actually changed (avoids loops)
-      if (JSON.stringify(remote) !== JSON.stringify(current)) {
+      // Only update local state if the data actually changed (avoids loops).
+      // Skip if there is a pending local write: the debounce timer has not fired yet,
+      // meaning the user just made a change that hasn't reached Firestore.  Letting a
+      // stale snapshot overwrite local state at this point would silently discard that
+      // change (the timer would then flush the now-overwritten state back to Firestore).
+      if (JSON.stringify(remote) !== JSON.stringify(current) && !writeTimer) {
         syncingFromRemote = true
         useStore.setState({
           meals: remote.meals ?? DEFAULT_MEALS,
@@ -69,8 +73,24 @@ export function startFirestoreSync(onReady: () => void): () => void {
     }
   })
 
+  // Flush any pending debounced write immediately so that closing or refreshing
+  // the page within the 300 ms debounce window doesn't silently discard changes.
+  function flushPendingWrite() {
+    if (!writeTimer) return
+    clearTimeout(writeTimer)
+    writeTimer = null
+    if (!syncingFromRemote) {
+      setDoc(STATE_DOC, pickSyncedState(useStore.getState())).catch(console.error)
+    }
+  }
+
+  window.addEventListener('beforeunload', flushPendingWrite)
+  window.addEventListener('pagehide', flushPendingWrite)
+
   return () => {
-    if (writeTimer) clearTimeout(writeTimer)
+    flushPendingWrite()
+    window.removeEventListener('beforeunload', flushPendingWrite)
+    window.removeEventListener('pagehide', flushPendingWrite)
     unsubStore?.()
     unsubFirestore()
   }
