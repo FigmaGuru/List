@@ -37,8 +37,10 @@ export function startFirestoreSync(onReady: () => void): () => void {
       const remote = snap.data()
       const current = pickSyncedState(useStore.getState())
 
-      // Only update local state if the data actually changed (avoids loops)
-      if (JSON.stringify(remote) !== JSON.stringify(current)) {
+      // Only update local state if the data actually changed (avoids loops).
+      // Skip if there's a pending local write — applying stale remote data would
+      // overwrite changes the user just made before they're flushed to Firestore.
+      if (JSON.stringify(remote) !== JSON.stringify(current) && !writeTimer) {
         syncingFromRemote = true
         useStore.setState({
           meals: remote.meals ?? DEFAULT_MEALS,
