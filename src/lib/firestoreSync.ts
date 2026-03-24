@@ -72,14 +72,44 @@ export function startFirestoreSync(onReady: () => void): () => void {
       // Skip if there's a pending local write — applying stale remote data would
       // overwrite changes the user just made before they're flushed to Firestore.
       if (JSON.stringify(remote) !== JSON.stringify(current) && !writeTimer && !writeInFlight) {
-        syncingFromRemote = true
-        useStore.setState({
-          meals: remote.meals ?? DEFAULT_MEALS,
-          plan: remote.plan ?? {},
-          shoppingList: remote.shoppingList ?? [],
-          articles: remote.articles ?? [],
-        })
-        syncingFromRemote = false
+        // Detect meals that exist locally but not in the remote snapshot.
+        // These are meals that were added locally but whose Firestore write
+        // failed (e.g. network error) or was cancelled (e.g. app closed within
+        // the 300 ms debounce window).  Blindly replacing local state with the
+        // remote snapshot would permanently discard them.
+        const remoteMealIds = new Set((remote.meals ?? []).map((m: { id: string }) => m.id))
+        const localOnlyMeals = current.meals.filter((m) => !remoteMealIds.has(m.id))
+
+        if (localOnlyMeals.length > 0) {
+          // Merge: keep the remote state (plan, shopping, articles) but add
+          // back the locally-only meals so they are not lost.  Then push the
+          // merged result to Firestore so it finally gets persisted.
+          const mergedMeals = [...(remote.meals ?? DEFAULT_MEALS), ...localOnlyMeals]
+          syncingFromRemote = true
+          useStore.setState({
+            meals: mergedMeals,
+            plan: remote.plan ?? {},
+            shoppingList: remote.shoppingList ?? [],
+            articles: remote.articles ?? [],
+          })
+          syncingFromRemote = false
+          writeInFlight = true
+          setDoc(STATE_DOC, pickSyncedState(useStore.getState()))
+            .then(() => { writeInFlight = false })
+            .catch((err) => {
+              console.error(err)
+              setTimeout(() => { writeInFlight = false }, 2000)
+            })
+        } else {
+          syncingFromRemote = true
+          useStore.setState({
+            meals: remote.meals ?? DEFAULT_MEALS,
+            plan: remote.plan ?? {},
+            shoppingList: remote.shoppingList ?? [],
+            articles: remote.articles ?? [],
+          })
+          syncingFromRemote = false
+        }
       }
     }
 
