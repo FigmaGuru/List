@@ -49,7 +49,7 @@ export default function MealLibrary() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search meals…"
-            className="w-full h-11 pl-10 pr-4 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#226b66]"
+            className="w-full h-11 pl-10 pr-4 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 text-base text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#226b66]"
           />
         </div>
 
@@ -60,7 +60,7 @@ export default function MealLibrary() {
               key={f.value}
               onClick={() => setFilter(f.value)}
               className={cn(
-                'shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition',
+                'shrink-0 whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition',
                 filter === f.value
                   ? 'bg-[#226b66] text-white'
                   : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700',

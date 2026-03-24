@@ -48,6 +48,13 @@
   .pt-safe-header {
     padding-top: calc(env(safe-area-inset-top, 0px) + 2rem);
   }
+  /* Lifts fixed bottom sheets above the software keyboard.
+     --keyboard-height is updated by App.tsx via the VisualViewport API (works in
+     all browsers including Android Chrome in browser mode).
+     env(keyboard-inset-height) adds iOS 15+ / installed-PWA support on top. */
+  .bottom-keyboard-safe {
+    bottom: max(env(keyboard-inset-height, 0px), var(--keyboard-height, 0px));
+  }
   .scrollbar-hide {
     scrollbar-width: none;
     -ms-overflow-style: none;

@@ -42,7 +42,8 @@ function AddFromLibrarySheet({
           placeholder="Search meals…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full h-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#226b66] mb-3"
+          autoFocus
+          className="w-full h-11 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 px-4 text-base focus:outline-none focus:ring-2 focus:ring-[#226b66] mb-3"
         />
         <div className="space-y-2 overflow-y-auto pr-0.5">
           {filtered.map((meal) => {
@@ -186,13 +187,13 @@ export default function MealPlan() {
                 <div className="flex gap-1">
                   <button
                     onClick={() => setAddNewDate(iso)}
-                    className="h-7 px-2.5 rounded-full border border-[#226b66] text-[#226b66] text-xs font-semibold flex items-center gap-1 hover:bg-[#e8f8f7] dark:hover:bg-[#1a3a38] transition"
+                    className="h-9 px-3 rounded-full border border-[#226b66] text-[#226b66] text-xs font-semibold flex items-center gap-1 hover:bg-[#e8f8f7] dark:hover:bg-[#1a3a38] transition"
                   >
                     <Plus className="h-3 w-3" strokeWidth={2.5} /> New
                   </button>
                   <button
                     onClick={() => setLibraryDate(iso)}
-                    className="h-7 px-2.5 rounded-full bg-[#226b66] text-white text-xs font-semibold flex items-center gap-1 hover:bg-[#1a5550] transition"
+                    className="h-9 px-3 rounded-full bg-[#226b66] text-white text-xs font-semibold flex items-center gap-1 hover:bg-[#1a5550] transition"
                   >
                     <Plus className="h-3 w-3" strokeWidth={2.5} /> Library
                   </button>

@@ -24,6 +24,25 @@ export default function App() {
     return unsub
   }, [])
 
+  // Track the software keyboard height via the VisualViewport API and expose it
+  // as a CSS custom property so dialogs can lift themselves above the keyboard.
+  // This covers Android Chrome in browser mode where env(keyboard-inset-height)
+  // is not available.
+  useEffect(() => {
+    const vv = window.visualViewport
+    if (!vv) return
+    const update = () => {
+      const kbHeight = Math.max(0, window.innerHeight - vv.height - vv.offsetTop)
+      document.documentElement.style.setProperty('--keyboard-height', `${kbHeight}px`)
+    }
+    vv.addEventListener('resize', update)
+    vv.addEventListener('scroll', update)
+    return () => {
+      vv.removeEventListener('resize', update)
+      vv.removeEventListener('scroll', update)
+    }
+  }, [])
+
   if (!synced) {
     return (
       <div className="flex h-dvh items-center justify-center bg-background">

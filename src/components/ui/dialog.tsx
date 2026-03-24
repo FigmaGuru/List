@@ -34,10 +34,10 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        'fixed left-0 right-0 bottom-0 z-50 rounded-t-3xl shadow-2xl',
+        'fixed left-0 right-0 z-50 rounded-t-3xl shadow-2xl bottom-keyboard-safe',
         'bg-white dark:bg-gray-900',
         'border-t border-gray-100 dark:border-gray-800',
-        'p-6 pb-10 max-h-[92dvh] overflow-y-auto',
+        'p-6 pb-[max(2.5rem,env(safe-area-inset-bottom,0px))] max-h-[92dvh] overflow-y-auto',
         'data-[state=open]:animate-in data-[state=closed]:animate-out',
         'data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom',
         'duration-300',
