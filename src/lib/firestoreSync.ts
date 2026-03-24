@@ -26,7 +26,26 @@ function pickSyncedState(state: ReturnType<typeof useStore.getState>) {
  * Returns an unsubscribe function.
  */
 export function startFirestoreSync(onReady: () => void): () => void {
-  let unsubStore: (() => void) | null = null
+  let initialSyncDone = false
+
+  // Wire up local → Firestore writes immediately so that any changes made
+  // before the first snapshot arrives are tracked by writeTimer.
+  // Without this, changes made before the first snapshot would not set
+  // writeTimer, so the snapshot handler would overwrite them with stale
+  // remote data.
+  const unsubStore = useStore.subscribe(() => {
+    if (syncingFromRemote) return
+    // Debounce so that rapid successive updates (e.g. addMeal + addMealToDay
+    // called back-to-back) are batched into a single Firestore write.
+    // Without this, the first write (meals only) comes back as a snapshot and
+    // overwrites local state, wiping the plan entry added by addMealToDay.
+    if (writeTimer) clearTimeout(writeTimer)
+    writeTimer = setTimeout(() => {
+      writeTimer = null
+      if (syncingFromRemote) return
+      setDoc(STATE_DOC, pickSyncedState(useStore.getState())).catch(console.error)
+    }, 300)
+  })
 
   const unsubFirestore = onSnapshot(STATE_DOC, (snap) => {
     if (!snap.exists()) {
@@ -52,28 +71,15 @@ export function startFirestoreSync(onReady: () => void): () => void {
       }
     }
 
-    // After the first snapshot, wire up local → Firestore writes
-    if (!unsubStore) {
-      unsubStore = useStore.subscribe(() => {
-        if (syncingFromRemote) return
-        // Debounce so that rapid successive updates (e.g. addMeal + addMealToDay
-        // called back-to-back) are batched into a single Firestore write.
-        // Without this, the first write (meals only) comes back as a snapshot and
-        // overwrites local state, wiping the plan entry added by addMealToDay.
-        if (writeTimer) clearTimeout(writeTimer)
-        writeTimer = setTimeout(() => {
-          writeTimer = null
-          if (syncingFromRemote) return
-          setDoc(STATE_DOC, pickSyncedState(useStore.getState())).catch(console.error)
-        }, 300)
-      })
+    if (!initialSyncDone) {
+      initialSyncDone = true
       onReady()
     }
   })
 
   return () => {
     if (writeTimer) clearTimeout(writeTimer)
-    unsubStore?.()
+    unsubStore()
     unsubFirestore()
   }
 }
