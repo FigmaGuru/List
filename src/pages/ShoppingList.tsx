@@ -195,7 +195,7 @@ function ShoppingItemRow({ item, onToggle, onDelete }: ShoppingItemRowProps) {
       <button
         onClick={onToggle}
         className={cn(
-          'h-6 w-6 shrink-0 rounded-full border-2 flex items-center justify-center transition-all',
+          'h-8 w-8 shrink-0 rounded-full border-2 flex items-center justify-center transition-all',
           item.checked
             ? 'bg-[#226b66] border-[#226b66]'
             : 'border-gray-300 dark:border-gray-600 hover:border-[#226b66]',

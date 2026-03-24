@@ -85,6 +85,7 @@ export function AddMealDialog({ open, onOpenChange, addToDate }: AddMealDialogPr
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Spaghetti Bolognese"
                 className="mt-1"
+                autoFocus
                 required
               />
             </div>

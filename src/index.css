@@ -48,6 +48,12 @@
   .pt-safe-header {
     padding-top: calc(env(safe-area-inset-top, 0px) + 2rem);
   }
+  /* Lifts fixed bottom sheets above the software keyboard.
+     env(keyboard-inset-height) is supported in iOS 15+ Safari and Chrome 110+;
+     falls back to 0 on older browsers (same as the previous bottom-0 behaviour). */
+  .bottom-keyboard-safe {
+    bottom: env(keyboard-inset-height, 0px);
+  }
   .scrollbar-hide {
     scrollbar-width: none;
     -ms-overflow-style: none;

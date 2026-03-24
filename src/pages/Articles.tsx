@@ -39,7 +39,7 @@ function AddArticleDialog({ open, onOpenChange }: { open: boolean; onOpenChange:
             <Label htmlFor="art-url">URL *</Label>
             <div className="relative mt-1">
               <LinkIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input id="art-url" type="url" value={url} onChange={(e) => setUrl(e.target.value)}
+              <Input id="art-url" type="url" inputMode="url" value={url} onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://…" className="pl-10" required />
             </div>
           </div>
