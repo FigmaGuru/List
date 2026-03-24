@@ -9,6 +9,10 @@ const STATE_DOC = doc(db, 'shared', 'state')
 let syncingFromRemote = false
 // Debounce timer — batches rapid successive state changes into one Firestore write
 let writeTimer: ReturnType<typeof setTimeout> | null = null
+// True while a setDoc call is in-flight. Prevents a failed write's revert snapshot
+// from overwriting local state (Firestore fires the revert snapshot after rejection,
+// at which point writeTimer is already null).
+let writeInFlight = false
 
 function pickSyncedState(state: ReturnType<typeof useStore.getState>) {
   return {
@@ -43,7 +47,15 @@ export function startFirestoreSync(onReady: () => void): () => void {
     writeTimer = setTimeout(() => {
       writeTimer = null
       if (syncingFromRemote) return
-      setDoc(STATE_DOC, pickSyncedState(useStore.getState())).catch(console.error)
+      writeInFlight = true
+      setDoc(STATE_DOC, pickSyncedState(useStore.getState()))
+        .then(() => { writeInFlight = false })
+        .catch((err) => {
+          console.error(err)
+          // Delay clearing the flag so the revert snapshot Firestore fires on
+          // rejection is still blocked from overwriting our local state.
+          setTimeout(() => { writeInFlight = false }, 2000)
+        })
     }, 300)
   })
 
@@ -59,7 +71,7 @@ export function startFirestoreSync(onReady: () => void): () => void {
       // Only update local state if the data actually changed (avoids loops).
       // Skip if there's a pending local write — applying stale remote data would
       // overwrite changes the user just made before they're flushed to Firestore.
-      if (JSON.stringify(remote) !== JSON.stringify(current) && !writeTimer) {
+      if (JSON.stringify(remote) !== JSON.stringify(current) && !writeTimer && !writeInFlight) {
         syncingFromRemote = true
         useStore.setState({
           meals: remote.meals ?? DEFAULT_MEALS,
@@ -79,6 +91,7 @@ export function startFirestoreSync(onReady: () => void): () => void {
 
   return () => {
     if (writeTimer) clearTimeout(writeTimer)
+    writeInFlight = false
     unsubStore()
     unsubFirestore()
   }
